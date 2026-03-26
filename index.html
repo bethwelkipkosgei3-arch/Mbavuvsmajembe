@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Boxing Vote - Mbavu vs Majembe</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      color-scheme: dark;
+    }
+
+    body {
+      background: radial-gradient(circle at top left, #1f2937 0, #020617 45%, #000000 100%);
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .glass {
+      background: rgba(15, 23, 42, 0.88);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      box-shadow:
+        0 18px 45px rgba(15, 23, 42, 0.9),
+        0 0 0 1px rgba(15, 23, 42, 0.6);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #f97316, #ea580c, #f59e0b);
+      box-shadow: 0 14px 35px rgba(249, 115, 22, 0.55);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px) scale(1.01);
+      box-shadow: 0 18px 45px rgba(249, 115, 22, 0.7);
+      filter: brightness(1.04);
+    }
+
+    .btn-primary:active {
+      transform: translateY(1px) scale(0.99);
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.9);
+      filter: brightness(0.96);
+    }
+
+    .btn-disabled {
+      background: linear-gradient(135deg, #4b5563, #6b7280);
+      box-shadow: none;
+      cursor: default;
+      opacity: 0.7;
+    }
+
+    .countdown-segment {
+      background: radial-gradient(circle at top, #111827, #020617);
+      border: 1px solid rgba(75, 85, 99, 0.6);
+      box-shadow:
+        0 12px 25px rgba(15, 23, 42, 0.9),
+        0 0 0 1px rgba(15, 23, 42, 0.7);
+    }
+
+    .progress-bar {
+      transition: width 0.5s ease-out;
+    }
+
+    .badge {
+      background: linear-gradient(135deg, rgba(52, 211, 153, 0.2), rgba(56, 189, 248, 0.12));
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.9);
+    }
+
+    @keyframes pulse-glow {
+      0%, 100% {
+        box-shadow: 0 0 0 0 rgba(248, 250, 252, 0.12);
+        transform: translateY(0);
+      }
+      50% {
+        box-shadow: 0 0 0 10px rgba(248, 250, 252, 0);
+        transform: translateY(-1px);
+      }
+    }
+
+    .glow-ring {
+      animation: pulse-glow 2.4s ease-out infinite;
+    }
+
+    .choice-card {
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    }
+
+    .choice-card:hover {
+      transform: translateY(-4px);
+      box-shadow:
+        0 18px 40px rgba(15, 23, 42, 0.95),
+        0 0 0 1px rgba(30, 64, 175, 0.8);
+      border-color: rgba(59, 130, 246, 0.7);
+    }
+
+    .choice-selected {
+      border-color: rgba(249, 115, 22, 0.9) !important;
+      box-shadow:
+        0 18px 40px rgba(15, 23, 42, 1),
+        0 0 0 1px rgba(249, 115, 22, 0.9);
+    }
+
+    .subtle-scroll::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    .subtle-scroll::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.5);
+      border-radius: 999px;
+    }
+
+    .subtle-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    @keyframes fade-slide-up {
+      0% {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .fade-in-up {
+      animation: fade-slide-up 0.75s ease-out forwards;
+    }
+  </style>
+</head>
+<body class="text-slate-100 antialiased">
+  <div class="min-h-screen flex flex-col items-center justify-center px-4 py-6">
+    <!-- Main wrapper -->
+    <div class="w-full max-w-4xl glass rounded-3xl p-5 sm:p-8 lg:p-10 fade-in-up relative overflow-hidden">
+      <!-- Ambient gradient blobs -->
+      <div class="pointer-events-none absolute inset-0 -z-10">
+        <div class="absolute -top-32 -left-32 w-72 h-72 bg-orange-500/20 rounded-full blur-3xl"></div>
+        <div class="absolute -bottom-32 -right-24 w-72 h-72 bg-sky-500/20 rounded-full blur-3xl"></div>
+      </div>
+
+      <!-- Header -->
+      <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-7">
+        <div>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full badge text-xs font-medium text-teal-200 mb-2">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 glow-ring"></span>
+            Official Fan Vote
+          </div>
+          <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight">
+            Mbavu <span class="text-orange-400">vs</span> Majembe
+          </h1>
+          <p class="text-sm sm:text-base text-slate-300/80 mt-1 max-w-xl">
+            Choose your champion once from this device. Votes are locked and saved locally.
+          </p>
+        </div>
+        <div class="text-right">
+          <p class="text-[11px] uppercase tracking-[0.16em] text-slate-400 mb-1">Event Date</p>
+          <p class="text-sm sm:text-base font-semibold text-slate-100">
+            4th April, 20:00 Local Time
+          </p>
+        </div>
+      </header>
+
+      <!-- Countdown -->
+      <section class="mb-8">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full bg-slate-900/70 flex items-center justify-center border border-slate-600/60">
+              <span class="text-lg">⏱</span>
+            </div>
+            <div>
+              <p class="text-[11px] uppercase tracking-[0.16em] text-slate-400 mb-0.5">Countdown</p>
+              <p class="text-xs sm:text-sm text-slate-300/90">
+                Voting remains open until the bell rings.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-4 grid grid-cols-4 gap-2 sm:gap-4">
+          <div class="countdown-segment rounded-2xl px-2.5 py-3.5 sm:px-3.5 sm:py-4 flex flex-col items-center justify-center">
+            <span id="days" class="text-xl sm:text-3xl font-extrabold tabular-nums text-slate-50"></span>
+            <span class="text-[10px] sm:text-xs uppercase tracking-[0.16em] text-slate-400 mt-1">Days</span>
+          </div>
+          <div class="countdown-segment rounded-2xl px-2.5 py-3.5 sm:px-3.5 sm:py-4 flex flex-col items-center justify-center">
+            <span id="hours" class="text-xl sm:text-3xl font-extrabold tabular-nums text-slate-50"></span>
+            <span class="text-[10px] sm:text-xs uppercase tracking-[0.16em] text-slate-400 mt-1">Hours</span>
+          </div>
+          <div class="countdown-segment rounded-2xl px-2.5 py-3.5 sm:px-3.5 sm:py-4 flex flex-col items-center justify-center">
+            <span id="minutes" class="text-xl sm:text-3xl font-extrabold tabular-nums text-slate-50"></span>
+            <span class="text-[10px] sm:text-xs uppercase tracking-[0.16em] text-slate-400 mt-1">Minutes</span>
+          </div>
+          <div class="countdown-segment rounded-2xl px-2.5 py-3.5 sm:px-3.5 sm:py-4 flex flex-col items-center justify-center">
+            <span id="seconds" class="text-xl sm:text-3xl font-extrabold tabular-nums text-slate-50"></span>
+            <span class="text-[10px] sm:text-xs uppercase tracking-[0.16em] text-slate-400 mt-1">Seconds</span>
+          </div>
+        </div>
+        <p id="countdown-status" class="mt-3 text-xs sm:text-sm text-amber-200/90"></p>
+      </section>
+
+      <!-- Voting section -->
+      <section class="mb-7">
+        <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-4">
+          <div>
+            <p class="text-[11px] uppercase tracking-[0.16em] text-slate-400 mb-1">Your Vote</p>
+            <p class="text-xs sm:text-sm text-slate-300/90">
+              Select one fighter. Each phone can vote only once and cannot change or reset.
+            </p>
+          </div>
+          <div class="text-right">
+            <p class="text-[11px] uppercase tracking-[0.16em] text-slate-400 mb-0.5">Voting Lock</p>
+            <p id="vote-lock-status" class="text-xs sm:text-sm text-emerald-300 font-medium">
+              This device has not voted yet.
+            </p>
+          </div>
+        </div>
+
+        <!-- Fighter cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 mb-4">
+          <!-- Mbavu -->
+          <button id="vote-mbavu" class="group choice-card relative rounded-2xl border border-slate-700 bg-gradient-to-br from-slate-900/80 via-slate-900/40 to-slate-950/80 p-4 sm:p-5 text-left focus:outline-none w-full">
+            <div class="absolute inset-x-6 -top-1 h-px bg-gradient-to-r from-transparent via-orange-500/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div class="flex items-center gap-3 mb-4">
+              <div class="relative">
+                <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-orange-500 via-orange-400 to-amber-300 flex items-center justify-center text-xl sm:text-2xl font-extrabold text-slate-950 shadow-lg shadow-orange-500/40">
+                  M
+                </div>
+              </div>
+              <div>
+                <p class="text-xs uppercase tracking-[0.22em] text-orange-300/80 mb-0.5">Mbavu</p>
+                <h2 class="text-base sm:text-lg font-semibold">Mbavu "The Hammer"</h2>
+                <p class="text-[11px] sm:text-xs text-slate-400 mt-0.5">
+                  Known for heavy punches and relentless pressure in every round.
+                </p>
+              </div>
+            </div>
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <p class="text-[10px] uppercase tracking-[0.16em] text-slate-400 mb-0.5">
+                  Votes
+                </p>
+                <p class="text-lg sm:text-2xl font-extrabold tabular-nums" id="mbavu-count">0</p>
+              </div>
+              <div class="text-right">
+                <p class="text-[10px] uppercase tracking-[0.16em] text-slate-400 mb-0.5">
+                  Support
+                </p>
+                <p class="text-xs sm:text-sm font-medium">
+                  <span id="mbavu-percent">0</span>%
+                </p>
+              </div>
+            </div>
+          </button>
+
+          <!-- Majembe -->
+          <button id="vote-majembe" class="group choice-card relative rounded-2xl border border-slate-700 bg-gradient-to-br from-slate-900/80 via-slate-900/40 to-slate-950/80 p-4 sm:p-5 text-left focus:outline-none w-full">
+            <div class="absolute inset-x-6 -top-1 h-px bg-gradient-to-r from-transparent via-sky-500/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div class="flex items-center gap-3 mb-4">
+              <div class="relative">
+                <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-sky-500 via-sky-400 to-cyan-300 flex items-center justify-center text-xl sm:text-2xl font-extrabold text-slate-950 shadow-lg shadow-sky-500/40">
+                  J
+                </div>
+              </div>
+              <div>
+                <p class="text-xs uppercase tracking-[0.22em] text-sky-300/80 mb-0.5">Majembe</p>
+                <h2 class="text-base sm:text-lg font-semibold">Majembe "The Storm"</h2>
+                <p class="text-[11px] sm:text-xs text-slate-400 mt-0.5">
+                  Lightning-fast combinations and elite footwork that control the ring.
+                </p>
+              </div>
+            </div>
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <p class="text-[10px] uppercase tracking-[0.16em] text-slate-400 mb-0.5">
+                  Votes
+                </p>
+                <p class="text-lg sm:text-2xl font-extrabold tabular-nums" id="majembe-count">0</p>
+              </div>
+              <div class="text-right">
+                <p class="text-[10px] uppercase tracking-[0.16em] text-slate-400 mb-0.5">
+                  Support
+                </p>
+                <p class="text-xs sm:text-sm font-medium">
+                  <span id="majembe-percent">0</span>%
+                </p>
+              </div>
+            </div>
+          </button>
+        </div>
+
+        <!-- Progress bar -->
+        <div class="mt-3">
+          <div class="flex items-center justify-between mb-2">
+            <p class="text-[11px] uppercase tracking-[0.16em] text-slate-400">
+              Live Vote Split
+            </p>
+            <p class="text-xs text-slate-300">
+              Total Votes: <span id="total-votes">0</span>
+            </p>
+          </div>
+          <div class="w-full h-3 rounded-full bg-slate-800/80 overflow-hidden flex">
+            <div id="mbavu-bar" class="progress-bar h-full bg-gradient-to-r from-orange-500 via-orange-400 to-amber-300" style="width: 0%;"></div>
+            <div id="majembe-bar" class="progress-bar h-full bg-gradient-to-r from-sky-500 via-sky-400 to-cyan-300" style="width: 0%;"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Messages -->
+      <section class="pt-4 border-t border-slate-800/80">
+        <p id="status-message" class="text-xs sm:text-sm text-slate-200"></p>
+        <p id="warning-message" class="mt-1 text-[11px] sm:text-xs text-amber-300/90"></p>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    // --- VOTING LOGIC (LOCAL, PER-DEVICE) ---
+    const STORAGE_KEY = "boxing_vote_mbavu_majembe_v1";
+
+    function getStoredData() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) {
+          return {
+            mbavu: 0,
+            majembe: 0,
+            voted: false,
+            selection: null
+          };
+        }
+        const parsed = JSON.parse(raw);
+        if (
+          typeof parsed.mbavu === "number" &&
+          typeof parsed.majembe === "number" &&
+          typeof parsed.voted === "boolean"
+        ) {
+          return parsed;
+        }
+        throw new Error("Corrupt data");
+      } catch (e) {
+        return {
+          mbavu: 0,
+          majembe: 0,
+          voted: false,
+          selection: null
+        };
+      }
+    }
+
+    function saveData(data) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+
+    function updateUIFromData() {
+      const data = getStoredData();
+      const total = data.mbavu + data.majembe;
+
+      document.getElementById("mbavu-count").textContent = data.mbavu;
+      document.getElementById("majembe-count").textContent = data.majembe;
+      document.getElementById("total-votes").textContent = total;
+
+      let mbavuPercent = 0;
+      let majembePercent = 0;
+      if (total > 0) {
+        mbavuPercent = Math.round((data.mbavu / total) * 100);
+        majembePercent = 100 - mbavuPercent;
+      }
+
+      document.getElementById("mbavu-percent").textContent = mbavuPercent;
+      document.getElementById("majembe-percent").textContent = majembePercent;
+
+      document.getElementById("mbavu-bar").style.width = mbavuPercent + "%";
+      document.getElementById("majembe-bar").style.width = majembePercent + "%";
+
+      const voteMbavuBtn = document.getElementById("vote-mbavu");
+      const voteMajembeBtn = document.getElementById("vote-majembe");
+      const voteLockStatus = document.getElementById("vote-lock-status");
+      const statusMessage = document.getElementById("status-message");
+      const warningMessage = document.getElementById("warning-message");
+
+      voteMbavuBtn.classList.remove("choice-selected");
+      voteMajembeBtn.classList.remove("choice-selected");
+
+      voteMbavuBtn.classList.remove("btn-disabled");
+      voteMajembeBtn.classList.remove("btn-disabled");
+      voteMbavuBtn.disabled = false;
+      voteMajembeBtn.disabled = false;
+
+      if (data.voted) {
+        voteMbavuBtn.disabled = true;
+        voteMajembeBtn.disabled = true;
+        voteMbavuBtn.classList.add("btn-disabled");
+        voteMajembeBtn.classList.add("btn-disabled");
+
+        if (data.selection === "mbavu") {
+          voteMbavuBtn.classList.add("choice-selected");
+          voteLockStatus.textContent = "This device voted for Mbavu.";
+        } else if (data.selection === "majembe") {
+          voteMajembeBtn.classList.add("choice-selected");
+          voteLockStatus.textContent = "This device voted for Majembe.";
+        } else {
+          voteLockStatus.textContent = "This device has already used its vote.";
+        }
+
+        voteLockStatus.classList.remove("text-emerald-300");
+        voteLockStatus.classList.add("text-amber-300");
+        statusMessage.textContent = "Your vote has been locked on this device and cannot be changed or reset.";
+        warningMessage.textContent = "Votes are stored on this phone and will remain even if you close or reload this page.";
+      } else {
+        voteLockStatus.textContent = "This device has not voted yet.";
+        voteLockStatus.classList.remove("text-amber-300");
+        voteLockStatus.classList.add("text-emerald-300");
+        statusMessage.textContent = "Tap on either Mbavu or Majembe to cast a single, permanent vote from this phone.";
+        warningMessage.textContent = "Once you vote, this device cannot vote again or reset its choice.";
+      }
+    }
+
+    function castVote(selection) {
+      const data = getStoredData();
+
+      if (data.voted) {
+        return;
+      }
+
+      if (selection === "mbavu") {
+        data.mbavu += 1;
+        data.selection = "mbavu";
+      } else if (selection === "majembe") {
+        data.majembe += 1;
+        data.selection = "majembe";
+      } else {
+        return;
+      }
+
+      data.voted = true;
+      saveData(data);
+      updateUIFromData();
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("vote-mbavu").addEventListener("click", () => castVote("mbavu"));
+      document.getElementById("vote-majembe").addEventListener("click", () => castVote("majembe"));
+      updateUIFromData();
+      initCountdown();
+    });
+
+    // --- COUNTDOWN TO 4TH APRIL ---
+    function initCountdown() {
+      // Set the target event date: next occurrence of 4th April
+      const now = new Date();
+      const currentYear = now.getFullYear();
+
+      function nextAprilFourthReference() {
+        const targetThisYear = new Date(currentYear, 3, 4, 20, 0, 0); // 4th April 20:00 local
+        if (now <= targetThisYear) {
+          return targetThisYear;
+        }
+        return new Date(currentYear + 1, 3, 4, 20, 0, 0);
+      }
+
+      const targetDate = nextAprilFourthReference();
+      const statusEl = document.getElementById("countdown-status");
+
+      function updateCountdown() {
+        const now = new Date();
+        const diff = targetDate - now;
+
+        const daysEl = document.getElementById("days");
+        const hoursEl = document.getElementById("hours");
+        const minutesEl = document.getElementById("minutes");
+        const secondsEl = document.getElementById("seconds");
+
+        if (diff <= 0) {
+          daysEl.textContent = "00";
+          hoursEl.textContent = "00";
+          minutesEl.textContent = "00";
+          secondsEl.textContent = "00";
+          statusEl.textContent = "Fight time! Voting may be closed.";
+          statusEl.classList.remove("text-amber-200/90");
+          statusEl.classList.add("text-rose-300");
+          return;
+        }
+
+        const totalSeconds = Math.floor(diff / 1000);
+        const days = Math.floor(totalSeconds / (3600 * 24));
+        const hours = Math.floor((totalSeconds % (3600 * 24)) / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+
+        daysEl.textContent = String(days).padStart(2, "0");
+        hoursEl.textContent = String(hours).padStart(2, "0");
+        minutesEl.textContent = String(minutes).padStart(2, "0");
+        secondsEl.textContent = String(seconds).padStart(2, "0");
+
+        statusEl.textContent = "Time left until the 4th of April event.";
+      }
+
+      updateCountdown();
+      setInterval(updateCountdown, 1000);
+    }
+  </script>
+</body>
+</html>
